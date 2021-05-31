@@ -1,16 +1,28 @@
 const RL_SYNC = require('readline-sync');
+let restart = true;
 
 function prompt(message) {
   console.log(`=> ${message}`);
 }
 
-// calculate percent (integer) to percent (decimal)
-function toDecimal(percent) {
-  return percent / 100;
+function isInvalidNumber(num) {
+  return num.trim() === '' ||
+         Number.isNaN(Number(num)) ||
+         Number(num) < 0;
 }
 
-function isInvalidNumber(input) {
-  return input.trim() === '' || Number.isNaN(Number(input));
+function retrieveInput(msg, promptSymbol = '') {
+  prompt(msg);
+  let input = RL_SYNC.question(promptSymbol);
+  while (isInvalidNumber(input)) {
+    prompt('Please enter numbers only.');
+    input = RL_SYNC.question(promptSymbol);
+  }
+  return input;
+}
+
+function toDecimal(percent) {
+  return percent / 100;
 }
 
 function calculateMonthlyInterest(apr) {
@@ -24,39 +36,42 @@ function calculateMortgage(loanAmount, apr, loanDurationInMonths) {
   let mortgate = loanAmount *
     (monthlyInterest /
     (1 - Math.pow((1 + monthlyInterest), (-loanDurationInMonths))));
-  
-    return mortgate.toFixed(2);
-}
- 
-prompt('Welcome to Mortgage Calculator!');
-
-prompt('What is your loan amount? EX: $1200');
-let loanAmount = RL_SYNC.question('$');
-
-while (isInvalidNumber(loanAmount)) {
-  prompt('Please enter numbers only.');
-  loanAmount = RL_SYNC.question('$');
+  return mortgate.toFixed(2);
 }
 
-prompt('What is the APR? EX: %8');
-let apr = RL_SYNC.question('%');
+while (restart) {
+  prompt('Welcome to Mortgage Calculator!');
+  console.log('----------------------------------------');
 
-while (isInvalidNumber(apr)) {
-  prompt('Please enter numbers only.');
-  apr = RL_SYNC.question('$');
+  let loanAmount = retrieveInput(
+    'What is your loan amount? EX: $1200', '$'
+  );
+  loanAmount = Number(loanAmount);
+
+  let apr = retrieveInput(
+    'What is the APR? EX: %8', '%'
+  );
+  apr = Number(apr);
+
+  let loanDuration = retrieveInput(
+    'What is the loan duration (months)? EX: 24'
+  );
+  loanDuration = Number(loanDuration);
+
+  let monthlyPayment = calculateMortgage(loanAmount, apr, loanDuration);
+
+  prompt(`Your monthly payment is: $${monthlyPayment}`);
+
+  prompt('Would you like to restart the program? (y/n)');
+
+  let answer = RL_SYNC.question('').toLowerCase();
+  while (!['y', 'n'].includes(answer)) {
+    prompt('Please enter "y" or "n".');
+    answer = RL_SYNC.question('');
+  }
+
+  if (answer === 'n') {
+    prompt('Thanks for using Mortgage Calculator!');
+    restart = false;
+  }
 }
-
-prompt('What is the loan duration (months)? EX: 24');
-let loanDuration = RL_SYNC.question();
-
-while (isInvalidNumber(loanDuration)) {
-  prompt('Please enter numbers only.');
-  loanDuration = RL_SYNC.question('$');
-}
-
-loanAmount = Number(loanAmount);
-apr = Number(apr);
-loanDuration = Number(loanDuration);
-let monthlyPayment = calculateMortgage(loanAmount, apr, loanDuration);
-
-prompt(`$${monthlyPayment}`);
