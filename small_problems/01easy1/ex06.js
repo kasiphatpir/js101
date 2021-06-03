@@ -65,7 +65,6 @@ console.log('Example: 5 OR 3,6,8,1,7');
 
 let userInput = READLINE.question();
 userInput = userInput.split(',');
-
 while (invalidArray(userInput)) {
   console.log('Please enter integer(s) greater than 0.');
   console.log('Example: 5 OR 3,6,8,1,7');
@@ -103,4 +102,3 @@ if (userInput.length > 1) {
     `The ${operation} of the integers between 1 and ${userInput[0]} is ${answer}.`
   );
 }
-
