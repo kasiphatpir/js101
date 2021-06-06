@@ -9,30 +9,38 @@ function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
+function checkUserWon(choice, computerChoice) {
+  return (choice === 'rock' && computerChoice === 'scissors') ||
+         (choice === 'rock' && computerChoice === 'lizard') ||
+         (choice === 'paper' && computerChoice === 'rock') ||
+         (choice === 'paper' && computerChoice === 'spock') ||
+         (choice === 'scissors' && computerChoice === 'paper') ||
+         (choice === 'scissors' &&  computerChoice === 'lizard') ||
+         (choice === 'lizard' && computerChoice === 'paper') ||
+         (choice === 'lizard' && computerChoice === 'spock') ||
+         (choice === 'spock' && computerChoice === 'rock') ||
+         (choice === 'spock' && computerChoice === 'scissors');
+}
+
+function checkComputerWon(choice, computerChoice) {
+  return (choice === 'rock' && computerChoice === 'paper') ||
+         (choice === 'rock' && computerChoice === 'spock') ||
+         (choice === 'paper' && computerChoice === 'scissors') ||
+         (choice === 'paper' && computerChoice === 'lizard') ||
+         (choice === 'scissors' && computerChoice === 'rock') ||
+         (choice === 'scissors' && computerChoice === 'spock') ||
+         (choice === 'lizard' && computerChoice === 'rock') ||
+         (choice === 'lizard' && computerChoice === 'scissors') ||
+         (choice === 'spock' && computerChoice === 'paper') ||
+         (choice === 'spock' && computerChoice === 'lizard');
+}
+
 function displayWinner(choice, computerChoice) {
   prompt(`You chose ${choice}. Computer chose ${computerChoice}.`);
 
-  if ((choice === 'rock' && computerChoice === 'scissors') ||
-      (choice === 'rock' && computerChoice === 'lizard') ||
-      (choice === 'paper' && computerChoice === 'rock') ||
-      (choice === 'paper' && computerChoice === 'spock') ||
-      (choice === 'scissors' && computerChoice === 'paper') ||
-      (choice === 'scissors' &&  computerChoice === 'lizard') ||
-      (choice === 'lizard' && computerChoice === 'paper') ||
-      (choice === 'lizard' && computerChoice === 'spock') ||
-      (choice === 'spock' && computerChoice === 'rock') ||
-      (choice === 'spock' && computerChoice === 'scissors')) {
+  if (checkUserWon(choice, computerChoice)) {
     prompt('You won!');
-  } else if ((choice === 'rock' && computerChoice === 'paper') ||
-             (choice === 'rock' && computerChoice === 'spock') ||
-             (choice === 'paper' && computerChoice === 'scissors') ||
-             (choice === 'paper' && computerChoice === 'lizard') ||
-             (choice === 'scissors' && computerChoice === 'rock')
-             (choice === 'scissors' && computerChoice === 'spock') ||
-             (choice === 'lizard' && computerChoice === 'rock') ||
-             (choice === 'lizard' && computerChoice === 'scissors') ||
-             (choice === 'spock' && computerChoice === 'paper') ||
-             (choice === 'spock' && computerChoice === 'lizard')) {
+  } else if (checkComputerWon(choice, computerChoice)) {
     prompt('Computer won!');
   } else {
     prompt("It's a tie!");
