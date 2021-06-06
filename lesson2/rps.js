@@ -1,72 +1,86 @@
-// ask the user for their move
-// the computer will choose their move
-// display who won/the result
-
+// global constants
 const readline = require('readline-sync');
-const VALID_CHOICES = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+const OPTIONS = {
+  r: 'rock',
+  p: 'paper',
+  sc: 'scissors',
+  l: 'lizard',
+  sp: 'spock'
+}
+const OPTIONS_KEYS = Object.keys(OPTIONS);
+const OPTIONS_VALS = Object.values(OPTIONS);
+const WINNING_COMBOS = {
+  rock:     ['scissors', 'lizard'],
+  paper:    ['rock',     'spock'],
+  scissors: ['paper',    'lizard'],
+  lizard:   ['paper',    'spock'],
+  spock:    ['rock',     'scissors'],
+};
 
+// functions
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
-function checkUserWon(choice, computerChoice) {
-  return (choice === 'rock' && computerChoice === 'scissors') ||
-         (choice === 'rock' && computerChoice === 'lizard') ||
-         (choice === 'paper' && computerChoice === 'rock') ||
-         (choice === 'paper' && computerChoice === 'spock') ||
-         (choice === 'scissors' && computerChoice === 'paper') ||
-         (choice === 'scissors' &&  computerChoice === 'lizard') ||
-         (choice === 'lizard' && computerChoice === 'paper') ||
-         (choice === 'lizard' && computerChoice === 'spock') ||
-         (choice === 'spock' && computerChoice === 'rock') ||
-         (choice === 'spock' && computerChoice === 'scissors');
+function getInput() {
+  prompt(`Choose one: ${OPTIONS_VALS.join(', ')}`);
+  prompt(`By typing one of: ${OPTIONS_KEYS.join(', ')}, respectively.`);
+  let input = readline.question();
+  let choice = validateInput(input);
+
+  return choice;
 }
 
-function checkComputerWon(choice, computerChoice) {
-  return (choice === 'rock' && computerChoice === 'paper') ||
-         (choice === 'rock' && computerChoice === 'spock') ||
-         (choice === 'paper' && computerChoice === 'scissors') ||
-         (choice === 'paper' && computerChoice === 'lizard') ||
-         (choice === 'scissors' && computerChoice === 'rock') ||
-         (choice === 'scissors' && computerChoice === 'spock') ||
-         (choice === 'lizard' && computerChoice === 'rock') ||
-         (choice === 'lizard' && computerChoice === 'scissors') ||
-         (choice === 'spock' && computerChoice === 'paper') ||
-         (choice === 'spock' && computerChoice === 'lizard');
+function validateInput(input) {
+  while (!OPTIONS_KEYS.includes(input)) {
+    prompt(`Type 'r' for rock, 'p' for paper, etc.`);
+    prompt(`${OPTIONS_VALS.join(', ')} (${OPTIONS_KEYS.join(', ')})`);
+    input = readline.question();
+  }
+
+  return input;
+}
+
+function playerWins(choice, computerChoice) {
+  return WINNING_COMBOS[choice].includes(computerChoice);
 }
 
 function displayWinner(choice, computerChoice) {
   prompt(`You chose ${choice}. Computer chose ${computerChoice}.`);
 
-  if (checkUserWon(choice, computerChoice)) {
+  if (playerWins(choice, computerChoice)) {
     prompt('You won!');
-  } else if (checkComputerWon(choice, computerChoice)) {
+  } else if (playerWins(computerChoice, choice)) {
     prompt('Computer won!');
   } else {
     prompt("It's a tie!");
   }
 }
 
-while (true) {
-  prompt(`Choose one: ${VALID_CHOICES.join(', ')}`);
-  let choice = readline.question();
-
-  while (!VALID_CHOICES.includes(choice)) {
-    prompt('Not a valid choice.');
-    choice = readline.question();
-  }
-
-  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-  let computerChoice = VALID_CHOICES[randomIndex];
-
-  displayWinner(choice, computerChoice);
-
+function playAgain() {
   prompt('Would you like to play again? (y/n)');
   let answer = readline.question().toLowerCase();
+  answer = validatePlayAgainAnswer(answer);
+
+  return answer[0] === 'n';
+}
+
+function validatePlayAgainAnswer(answer) {
   while (answer[0] !== 'y' && answer[0] !== 'n') {
-    prompt("Please enter 'y' or 'n'");
+    prompt("Please enter 'y' or 'n'.");
     answer = readline.question().toLowerCase();
   }
 
-  if (answer[0] === 'n') break;
+  return answer
+}
+
+// Main logic
+while (true) {
+  let choice = OPTIONS[getInput()];
+  let randomIndex = Math.floor(Math.random() * OPTIONS_KEYS.length);
+  let computerChoice = OPTIONS_VALS[randomIndex];
+
+  displayWinner(choice, computerChoice);
+
+  if (playAgain()) break;
 }
