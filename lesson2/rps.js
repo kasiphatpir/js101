@@ -6,7 +6,7 @@ const OPTIONS = {
   sc: 'scissors',
   l: 'lizard',
   sp: 'spock'
-}
+};
 const OPTIONS_KEYS = Object.keys(OPTIONS);
 const OPTIONS_VALS = Object.values(OPTIONS);
 const WINNING_COMBOS = {
@@ -16,22 +16,24 @@ const WINNING_COMBOS = {
   lizard:   ['paper',    'spock'],
   spock:    ['rock',     'scissors'],
 };
+let scores = 0;
+let computerScores = 0;
+let rounds = 1;
 
 // functions
 function prompt(msg) {
   console.log(`=> ${msg}`);
 }
 
-function getInput() {
+function getChoice() {
   prompt(`Choose one: ${OPTIONS_VALS.join(', ')}`);
   prompt(`By typing one of: ${OPTIONS_KEYS.join(', ')}, respectively.`);
-  let input = readline.question();
-  let choice = validateInput(input);
+  let choice = validateChoice(readline.question());
 
   return choice;
 }
 
-function validateInput(input) {
+function validateChoice(input) {
   while (!OPTIONS_KEYS.includes(input)) {
     prompt(`Type 'r' for rock, 'p' for paper, etc.`);
     prompt(`${OPTIONS_VALS.join(', ')} (${OPTIONS_KEYS.join(', ')})`);
@@ -41,27 +43,45 @@ function validateInput(input) {
   return input;
 }
 
+function updateScores(winner) {
+  switch (winner) {
+    case 'player':
+      scores += 1;
+      break;
+    case 'computer':
+      computerScores += 1;
+  }
+}
+
 function playerWins(choice, computerChoice) {
   return WINNING_COMBOS[choice].includes(computerChoice);
 }
 
 function checkWinner(choice, computerChoice) {
+  let winner;
   if (playerWins(choice, computerChoice)) {
-    return 'player';
+    winner = 'player';
   } else if (playerWins(computerChoice, choice)) {
-    return 'computer';
+    winner = 'computer';
   }
+
+  return winner;
 }
 
 function displayWinner(choice, computerChoice) {
   prompt(`You chose ${choice}. Computer chose ${computerChoice}.`);
 
-  if (playerWins(choice, computerChoice)) {
-    prompt('You won!');
-  } else if (playerWins(computerChoice, choice)) {
-    prompt('Computer won!');
-  } else {
-    prompt("It's a tie!");
+  let winner = checkWinner(choice, computerChoice);
+  switch (winner) {
+    case 'player':
+      prompt('You won!');
+      break;
+    case 'computer':
+      prompt('Computer won!');
+      break;
+    default:
+      prompt("It's a tie!");
+      break;
   }
 }
 
@@ -79,7 +99,7 @@ function playAgain() {
   let answer = readline.question().toLowerCase();
   answer = validatePlayAgainAnswer(answer);
 
-  return answer[0] === 'n';
+  return answer[0] === 'y';
 }
 
 function validatePlayAgainAnswer(answer) {
@@ -88,29 +108,27 @@ function validatePlayAgainAnswer(answer) {
     answer = readline.question().toLowerCase();
   }
 
-  return answer
+  return answer;
+}
+
+function resetGameSettings() {
+  scores = 0;
+  computerScores = 0;
+  rounds = 1;
 }
 
 // Main logic
 while (true) {
-  let scores = 0;
-  let computerScores = 0;
-  let rounds = 1;
-
   while (true) {
     prompt(`------------Round ${rounds}!------------`);
-    let choice = OPTIONS[getInput()];
+    let choice = OPTIONS[getChoice()];
     let randomIndex = Math.floor(Math.random() * OPTIONS_KEYS.length);
     let computerChoice = OPTIONS_VALS[randomIndex];
 
     let winner = checkWinner(choice, computerChoice);
-    if (winner === 'player') {
-      scores += 1;
-    } else if (winner === 'computer') {
-      computerScores += 1;
-    }
-
+    updateScores(winner);
     displayWinner(choice, computerChoice);
+
     prompt(`Your scores: ${scores} VS Computer's scores: ${computerScores}`);
     rounds += 1;
 
@@ -118,6 +136,10 @@ while (true) {
   }
 
   displayGrandWinner(scores);
+  resetGameSettings();
 
-  if (playAgain()) break;
+  if (!playAgain()) {
+    prompt(`Thank you for playing ${OPTIONS_VALS.join(', ')}!`);
+    break;
+  }
 }
