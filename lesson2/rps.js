@@ -16,6 +16,8 @@ const WINNING_COMBOS = {
   lizard:   ['paper',    'spock'],
   spock:    ['rock',     'scissors'],
 };
+
+// gameplay variables
 let scores = 0;
 let computerScores = 0;
 let rounds = 1;
