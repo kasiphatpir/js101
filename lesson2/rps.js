@@ -1,4 +1,3 @@
-// global constants
 const readline = require('readline-sync');
 const OPTIONS = {
   r: 'rock',
@@ -16,15 +15,22 @@ const WINNING_COMBOS = {
   lizard:   ['paper',    'spock'],
   spock:    ['rock',     'scissors'],
 };
+const WIN_SCORE = 3;
 
-// gameplay variables
 let scores = 0;
 let computerScores = 0;
 let rounds = 1;
 
-// functions
 function prompt(msg) {
   console.log(`=> ${msg}`);
+}
+
+function displayWelcomeMessage() {
+  prompt(`Welcome to ${OPTIONS_VALS.join(', ')}!`);
+  prompt('Let me introduce you to this game.');
+  prompt('We will play until one of us scores 3 points.');
+  prompt('Whoever wins 3 points first becomes the Grand Winner!');
+  prompt('Get ready!');
 }
 
 function getChoice() {
@@ -101,11 +107,11 @@ function playAgain() {
   let answer = readline.question().toLowerCase();
   answer = validatePlayAgainAnswer(answer);
 
-  return answer[0] === 'y';
+  return answer === 'y' || answer === 'yes';
 }
 
 function validatePlayAgainAnswer(answer) {
-  while (answer[0] !== 'y' && answer[0] !== 'n') {
+  while (!['yes', 'y', 'no', 'n'].includes(answer)) {
     prompt("Please enter 'y' or 'n'.");
     answer = readline.question().toLowerCase();
   }
@@ -121,6 +127,7 @@ function resetGameSettings() {
 
 // Main logic
 while (true) {
+  displayWelcomeMessage();
   while (true) {
     prompt(`------------Round ${rounds}!------------`);
     let choice = OPTIONS[getChoice()];
@@ -128,13 +135,16 @@ while (true) {
     let computerChoice = OPTIONS_VALS[randomIndex];
 
     let winner = checkWinner(choice, computerChoice);
+
+    console.clear();
+
     updateScores(winner);
     displayWinner(choice, computerChoice);
 
     prompt(`Your scores: ${scores} VS Computer's scores: ${computerScores}`);
     rounds += 1;
 
-    if (scores >= 3 || computerScores >= 3) break;
+    if (scores >= WIN_SCORE || computerScores >= WIN_SCORE) break;
   }
 
   displayGrandWinner(scores);
