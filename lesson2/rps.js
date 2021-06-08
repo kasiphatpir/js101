@@ -125,9 +125,10 @@ function resetGameSettings() {
   rounds = 1;
 }
 
-// Main logic
 while (true) {
+  console.clear();
   displayWelcomeMessage();
+
   while (true) {
     prompt(`------------Round ${rounds}!------------`);
     let choice = OPTIONS[getChoice()];
